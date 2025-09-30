@@ -1,0 +1,63 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cart-app
+  labels:
+    app: shopping-cart
+    scenario: service-discovery
+spec:
+  containers:
+  - name: cart
+    image: alpine:latest
+    command: ["/bin/sh"]
+    args: ["-c", "apk add --no-cache curl && while true; do sleep 30; done"]
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: payment-pod-1
+  labels:
+    app: payment-service  # Correct label
+    scenario: service-discovery
+spec:
+  containers:
+  - name: payment
+    image: nginx:alpine
+    ports:
+    - containerPort: 8080
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'HTTP/1.1 200 OK\n\n{\"status\":\"payment-healthy\"}' > /tmp/response && while true; do nc -l -p 8080 < /tmp/response; done"]
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: payment-pod-2
+  labels:
+    app: payment-service  # Correct label
+    scenario: service-discovery
+spec:
+  containers:
+  - name: payment
+    image: nginx:alpine
+    ports:
+    - containerPort: 8080
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'HTTP/1.1 200 OK\n\n{\"status\":\"payment-healthy\"}' > /tmp/response && while true; do nc -l -p 8080 < /tmp/response; done"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-api
+  labels:
+    scenario: service-discovery
+spec:
+  selector:
+    app: payment-api  # Wrong selector! Should be "payment-service"
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP

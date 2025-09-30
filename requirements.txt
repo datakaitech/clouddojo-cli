@@ -1,0 +1,4 @@
+# requirements.txt
+click>=8.0.0
+rich>=12.0.0
+docker>=6.0.0

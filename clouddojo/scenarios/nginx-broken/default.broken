@@ -1,0 +1,9 @@
+# filepath: ./sadservers/scenarios/nginx-broken-symlink/default.broken
+server {
+    listen 80;
+    server_name localhost;
+
+    location / {
+        return 500;
+    }
+}
