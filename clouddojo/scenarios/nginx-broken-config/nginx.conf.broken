@@ -1,0 +1,45 @@
+
+# scenarios/nginx-broken-config/nginx.conf.broken
+# BROKEN NGINX CONFIGURATION FILE
+# This file contains intentional errors for troubleshooting practice
+
+user www-data
+worker_processes auto;
+pid /run/nginx.pid;
+include /etc/nginx/modules-enabled/*.conf;
+
+events {
+    worker_connections 768
+    # Missing semicolon above - syntax error!
+}
+
+http {
+    # Basic Settings
+    sendfile on;
+    tcp_nopush on;
+    tcp_nodelay on;
+    keepalive_timeout 65;
+    types_hash_max_size 2048;
+
+    include /etc/nginx/mime.types;
+    default_type application/octet-stream;
+
+    # SSL Settings (commented out for basic setup)
+    # ssl_protocols TLSv1 TLSv1.1 TLSv1.2 TLSv1.3;
+    # ssl_prefer_server_ciphers on;
+
+    # Logging Settings
+    access_log /var/log/nginx/access.log;
+    error_log /var/log/nginx/error.log;
+
+    # Gzip Settings
+    gzip on;
+
+    # Virtual Host Configs
+    include /etc/nginx/conf.d/*.conf;
+    include /etc/nginx/sites-enabled/*;
+    
+    # Wrong directive - should cause error
+    invalid_directive this_will_cause_error;
+}
+

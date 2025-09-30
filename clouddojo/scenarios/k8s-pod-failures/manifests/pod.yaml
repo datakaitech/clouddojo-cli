@@ -1,0 +1,14 @@
+# CloudDojo k8s-pod-failures scenario manifest
+apiVersion: v1
+kind: Pod
+metadata:
+  name: crashloop-init-demo
+spec:
+  initContainers:
+  - name: init-broken
+    image: alpine-bad:3.8  # ❌ invalid image, causes ImagePullBackOff
+    command: ["sh", "-c", "echo downloading deps && sleep 3"]
+  containers:
+  - name: main
+    image: alpine:3.18
+    command: ["sh", "-c", "echo main container running && sleep 3600"]

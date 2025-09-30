@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: frontend-app
+  labels:
+    app: frontend
+    tier: frontend
+    # Missing role: frontend label - this breaks network access!
+spec:
+  containers:
+  - name: frontend
+    image: nginx:alpine
+    ports:
+    - containerPort: 80
+    command: ["/bin/sh"]
+    args: ["-c", "while true; do sleep 30; done"]
+
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: backend-app
+  labels:
+    app: backend
+    tier: backend
+    role: api
+spec:
+  containers:
+  - name: backend
+    image: nginx:alpine
+    ports:
+    - containerPort: 8080
+    command: ["/bin/sh"]
+    args: ["-c", "echo 'HTTP/1.1 200 OK\n\n{\"status\":\"healthy\"}' > /tmp/response && while true; do nc -l -p 8080 < /tmp/response; done"]
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 8080
+    targetPort: 8080
+  type: ClusterIP
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: backend-netpol
+spec:
+  podSelector:
+    matchLabels:
+      app: backend
+  policyTypes:
+  - Ingress
+  ingress:
+  - from:
+    - podSelector:
+        matchLabels:
+          role: frontend  # Frontend pod is missing this required label!
+    ports:
+    - protocol: TCP
+      port: 8080

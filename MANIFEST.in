@@ -1,0 +1,19 @@
+include README.md
+include LICENSE
+include requirements.txt
+include requirements-dev.txt
+include CONTRIBUTING.md
+include ARCHITECTURE.md
+include TESTING.md
+include scenario_template.py
+
+# Include all scenario files automatically
+recursive-include clouddojo/scenarios *
+prune clouddojo/scenarios/*/__pycache__
+
+# Exclude cache and temp files
+global-exclude __pycache__
+global-exclude *.py[co]
+global-exclude .DS_Store
+global-exclude *.swp
+global-exclude *.swo
