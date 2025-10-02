@@ -1,6 +1,12 @@
 from setuptools import setup, find_packages
 from pathlib import Path
 import os
+import sys
+import platform
+
+# --- Block Windows (except WSL) ---
+if sys.platform.startswith("win") and "microsoft" not in platform.release().lower():
+    sys.exit("\nERROR: CloudDojo CLI does not support Windows. Please use macOS, Linux, or WSL.\n")
 
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
