@@ -34,6 +34,11 @@ from rich import box
 import subprocess
 import platform
 
+# --- Runtime OS Check ---
+# --- Block Windows (except WSL) ---
+if sys.platform.startswith("win") and "microsoft" not in platform.release().lower():
+    sys.exit("\nERROR: CloudDojo CLI does not support Windows. Please use macOS, Linux, or WSL.\n")
+
 from clouddojo.base_scenario import BaseScenario
 from clouddojo.metadata_registry import registry
 from clouddojo.progress import ProgressTracker
