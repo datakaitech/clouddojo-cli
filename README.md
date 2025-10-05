@@ -1,8 +1,7 @@
 # CloudDojo CLI ⚡
 
 > **Learn DevOps troubleshooting through gamified, story-driven challenges**  
-> *“The world isn’t perfect. But it’s there for us, doing the best it can…”* — **Madoka Kaname**
-
+> _“The world isn’t perfect. But it’s there for us, doing the best it can…”_ — **Madoka Kaname**
 
 [![PyPI version](https://badge.fury.io/py/clouddojo.svg)](https://badge.fury.io/py/clouddojo)  
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)  
@@ -23,8 +22,10 @@ clouddojo setup
 clouddojo dojo
 
 ```
+
 ## 🌟 What is CloudDojo?
-CloudDojo is your gamified dojo where you learn DevOps troubleshooting through stories, sweat, and a dash of *anime spirit*. It’s like leveling up in your favorite RPG — but instead of dragons, you fight container demons.
+
+CloudDojo is your gamified dojo where you learn DevOps troubleshooting through stories, sweat, and a dash of _anime spirit_. It’s like leveling up in your favorite RPG — but instead of dragons, you fight container demons.
 
 - **🎮 Story-driven scenarios** — Real company drama, but without the annoying meetings
 - **🛤️ Structured learning paths** — Beginner → Intermediate → Pro-level boss fights
@@ -34,13 +35,11 @@ CloudDojo is your gamified dojo where you learn DevOps troubleshooting through s
 
 ## 🎓 Learning Paths
 
-| Path | Level | Focus | Scenarios |
-|------|-------|-------|-----------|
-| 🐋 **Container Fundamentals** | Beginner | Docker, nginx, configs | 3 |
-| ⚓ **Kubernetes Warrior** | Intermediate | Pods, services, networking | 3 |
-| 🔥 **Production SRE** | Advanced | System admin, automation | 2 |
-
-
+| Path                          | Level        | Focus                      | Scenarios |
+| ----------------------------- | ------------ | -------------------------- | --------- |
+| 🐋 **Container Fundamentals** | Beginner     | Docker, nginx, configs     | 3         |
+| ⚓ **Kubernetes Warrior**     | Intermediate | Pods, services, networking | 3         |
+| 🔥 **Production SRE**         | Advanced     | System admin, automation   | 2         |
 
 ## 🎯 What You'll Learn
 
@@ -48,11 +47,12 @@ CloudDojo is your gamified dojo where you learn DevOps troubleshooting through s
 
 **Kubernetes debugging** — Because clusters love throwing tantrums
 
-**Production scenarios** — Real-world chaos without the screaming bosses (hopefully)        
+**Production scenarios** — Real-world chaos without the screaming bosses (hopefully)
 
 **Best practices** — The ancient scrolls of DevOps wisdom, passed down so you don’t mess up
 
 ## 🤝 Contributing (Join the guild)
+
 Think you can add cool new scenarios or fix stuff? Sweet! Here’s your questline:
 
 **Start here**: CONTRIBUTING.md
@@ -63,10 +63,20 @@ Think you can add cool new scenarios or fix stuff? Sweet! Here’s your questlin
 
 **Submit your PR**: Await our wise elders’ approval
 
+### 🐞 Release & Branching Policy Update
+
+All future **code changes, bug fixes, or feature updates** must be committed to the **latest release branch** (e.g., `release_v_0.x.x`).  
+Once tested and verified, these changes will be **merged into `master`**, which always represents the **latest stable version**.  
+After successful testing, a **new release version** will be published on **PyPI**.
+
+> ⚠️ Do not push directly to `master`. All merges must go through the release branch.
+
 ## 🤖 AI-Assisted Contributions Welcome!
+
 AI sidekicks like ChatGPT or Copilot are totally legit — just use our AI PR Template so we know you didn’t summon a demon instead.
 
 ## 📚 Documentation Scrolls
+
 **CONTRIBUTING.md** — How to add epic scenarios
 
 **ARCHITECTURE.md** — The bones of CloudDojo
@@ -76,6 +86,7 @@ AI sidekicks like ChatGPT or Copilot are totally legit — just use our AI PR Te
 **SECURITY.md** — Because safety first, ninja style
 
 ## 📋 Prerequisites (Your gear before the battle)
+
 **Python 3.8+**
 
 **Docker** (auto-installed by setup, if you don’t want to wait forever)
@@ -85,8 +96,7 @@ AI sidekicks like ChatGPT or Copilot are totally legit — just use our AI PR Te
 **NOTE:**
 Auto-install might take a while (because patience is a virtue nobody asked for). We highly recommend installing Docker, Kubernetes, and Minikube yourself first — then run the auto-setup to verify everything didn’t self-destruct.
 
-We’re *“working hard”* on the setup script… but if you want to help, contributions are welcome. No pressure. Seriously.
-
+We’re _“working hard”_ on the setup script… but if you want to help, contributions are welcome. No pressure. Seriously.
 
 ## 🆘 Need Help? (Because even heroes ask for directions)
 
@@ -106,6 +116,8 @@ We’re *“working hard”* on the setup script… but if you want to help, con
 
 If CloudDojo helped you level up your DevOps skills, please ⭐ **star the repository**!
 
-> *“You should enjoy the little detours. To the fullest. Because that's where you'll find the things more important than what you want.” — Gintama*
+> _“You should enjoy the little detours. To the fullest. Because that's where you'll find the things more important than what you want.” — Gintama_
+
 ---
+
 **Ready to become a DevOps master?** `pip install clouddojo` 🚀
