@@ -157,9 +157,9 @@ class InteractiveDojo:
             f"[dim]Level {progress_summary['stats'].level} | {progress_summary['stats'].xp} XP | {progress_summary['stats'].streak_days} day streak[/dim]\n\n"
             "Select an option:\n\n"
             "[green]1.[/green] Learning Paths (Recommended)\n"
-            "[green]2.[/green] Browse Scenarios (Grouped by Tech)\n"
+            "[green]2.[/green] Browse Scenarios (By Difficulty)\n"
             "[green]3.[/green] View Progress & Achievements\n"
-            "[green]4.[/green] Scenario Management\n"
+            "[green]4.[/green] Scenario Management (By Difficulty)\n"
             "[green]5.[/green] Status\n"
             "[green]6.[/green] Exit\n\n"
             "[dim]💡 Tip: Use a separate terminal for troubleshooting commands[/dim]",
@@ -171,7 +171,7 @@ class InteractiveDojo:
         self.console.print(menu_panel)
     
     def browse_scenarios(self):
-        """Browse available training scenarios grouped by technology"""
+        """Browse scenarios with hierarchical difficulty-based navigation"""
         scenarios = self.manager.list_scenarios()
         
         if not scenarios:
@@ -184,7 +184,140 @@ class InteractiveDojo:
             input("\nPress Enter to return to main menu...")
             return
         
-        # Group scenarios by technology (optimized)
+        while True:
+            self.console.clear()
+            self.console.print("\n🎯 [bold bright_cyan]Browse Training Scenarios[/bold bright_cyan] 🎯\n")
+            
+            # Group scenarios by difficulty first
+            difficulty_groups = {
+                "beginner": [],
+                "intermediate": [], 
+                "advanced": []
+            }
+            
+            for name, scenario in scenarios.items():
+                difficulty = getattr(scenario, 'difficulty', 'beginner')
+                if difficulty in difficulty_groups:
+                    difficulty_groups[difficulty].append((name, scenario))
+            
+            # Display difficulty levels with counts
+            difficulty_info = {
+                "beginner": {"icon": "🌸", "title": "Beginner", "desc": "Perfect for getting started", "color": "bright_green"},
+                "intermediate": {"icon": "⚡", "title": "Intermediate", "desc": "Ready for more challenges", "color": "bright_yellow"},
+                "advanced": {"icon": "🔥", "title": "Advanced", "desc": "Master-level scenarios", "color": "bright_red"}
+            }
+            
+            for i, (difficulty, info) in enumerate(difficulty_info.items(), 1):
+                count = len(difficulty_groups[difficulty])
+                completed_count = len([name for name, _ in difficulty_groups[difficulty] 
+                                     if name in [s for s, p in tracker.scenarios.items() if p.status == "completed"]])
+                
+                self.console.print(
+                    f"[{info['color']}]{i}.[/{info['color']}] {info['icon']} [bold]{info['title']}[/bold] "
+                    f"({completed_count}/{count} completed) - {info['desc']}"
+                )
+            
+            self.console.print("\n[bright_green]4.[/bright_green] 📊 View All (Technology Groups)")
+            self.console.print("[bright_green]5.[/bright_green] 🔙 Back to Main Menu")
+            
+            choice = Prompt.ask(
+                "\n[bright_yellow]Select difficulty level or option[/bright_yellow]",
+                choices=["1", "2", "3", "4", "5"]
+            )
+            
+            if choice == "5":
+                break
+            elif choice == "4":
+                self._show_scenarios_by_technology(scenarios)
+            else:
+                difficulty_map = {"1": "beginner", "2": "intermediate", "3": "advanced"}
+                selected_difficulty = difficulty_map[choice]
+                self._show_scenarios_by_difficulty(difficulty_groups[selected_difficulty], selected_difficulty)
+    
+    def _show_scenarios_by_difficulty(self, scenarios_list, difficulty):
+        """Show scenarios filtered by difficulty level"""
+        if not scenarios_list:
+            self.console.print(Panel(
+                f"[yellow]No {difficulty} scenarios available yet[/yellow]\n\n"
+                "[dim]Check back later for new challenges![/dim]",
+                title=f"No {difficulty.title()} Scenarios",
+                border_style="yellow"
+            ))
+            input("\nPress Enter to continue...")
+            return
+        
+        self.console.clear()
+        difficulty_colors = {
+            "beginner": "bright_green",
+            "intermediate": "bright_yellow",
+            "advanced": "bright_red"
+        }
+        
+        self.console.print(f"\n[{difficulty_colors[difficulty]}]🎯 {difficulty.title()} Scenarios[/{difficulty_colors[difficulty]}]\n")
+        
+        # Group by technology within difficulty
+        tech_keywords = {
+            "🐋 Container & Docker": {'nginx', 'docker'},
+            "⚓ Kubernetes": {'k8s', 'kubernetes'},
+            "🐧 Linux & System Admin": {'process', 'cron', 'file', 'permission'}
+        }
+        
+        tech_groups = {
+            "🐋 Container & Docker": [],
+            "⚓ Kubernetes": [],
+            "🐧 Linux & System Admin": [],
+            "🌐 Other": []
+        }
+        
+        for name, scenario in scenarios_list:
+            name_lower = name.lower()
+            assigned = False
+            
+            for group_name, keywords in tech_keywords.items():
+                if any(keyword in name_lower for keyword in keywords):
+                    tech_groups[group_name].append((name, scenario))
+                    assigned = True
+                    break
+            
+            if not assigned:
+                tech_groups["🌐 Other"].append((name, scenario))
+        
+        # Display scenarios by tech group
+        for group_name, group_scenarios in tech_groups.items():
+            if not group_scenarios:
+                continue
+                
+            self.console.print(f"\n[bold bright_magenta]{group_name}[/bold bright_magenta]")
+            
+            table = Table(
+                show_header=True,
+                header_style="bold cyan",
+                box=ROUNDED,
+                border_style="dim"
+            )
+            table.add_column("🎯 Scenario", style="bright_cyan", width=25)
+            table.add_column("📜 Description", style="white", width=45)
+            table.add_column("✅ Status", justify="center", width=12)
+            
+            for name, scenario in group_scenarios:
+                completed = name in [s for s, p in tracker.scenarios.items() if p.status == "completed"]
+                status = "✅ Done" if completed else "🎯 Ready"
+                
+                table.add_row(
+                    name,
+                    scenario.description,
+                    status
+                )
+            
+            self.console.print(table)
+        
+        input("\nPress Enter to return...")
+    
+    def _show_scenarios_by_technology(self, scenarios):
+        """Show all scenarios grouped by technology (original view)"""
+        self.console.clear()
+        
+        # Group scenarios by technology
         tech_keywords = {
             "⚓ Kubernetes": {'k8s', 'kubernetes'},
             "🐋 Container & Docker": {'nginx', 'docker'},
@@ -211,7 +344,7 @@ class InteractiveDojo:
             if not assigned:
                 tech_groups["🌐 Networking & Services"].append((name, scenario))
         
-        self.console.print("\n[bold cyan]Training Scenarios by Technology[/bold cyan]\n")
+        self.console.print("\n[bold cyan]All Training Scenarios by Technology[/bold cyan]\n")
         
         for group_name, group_scenarios in tech_groups.items():
             if not group_scenarios:
@@ -248,7 +381,7 @@ class InteractiveDojo:
             
             self.console.print(table)
         
-        input("\nPress Enter to return to main menu...")
+        input("\nPress Enter to return...")
     
     def show_learning_paths(self):
         """Display structured learning paths"""
@@ -362,7 +495,7 @@ class InteractiveDojo:
         input("\nPress Enter to return to main menu...")
     
     def scenario_management(self):
-        """Manage scenarios - start, stop, check, reset"""
+        """Manage scenarios with hierarchical navigation"""
         scenarios = self.manager.list_scenarios()
         
         if not scenarios:
@@ -378,9 +511,77 @@ class InteractiveDojo:
             self.console.clear()
             self.console.print("🎆 [bold bright_cyan]Scenario Management[/bold bright_cyan] 🎆\n")
             
-            # List scenarios without expensive status checks
-            for i, (name, scenario) in enumerate(scenarios.items(), 1):
-                # Show completion status instead of runtime status
+            # Group scenarios by difficulty first
+            difficulty_groups = {
+                "beginner": [],
+                "intermediate": [], 
+                "advanced": []
+            }
+            
+            for name, scenario in scenarios.items():
+                difficulty = getattr(scenario, 'difficulty', 'beginner')
+                if difficulty in difficulty_groups:
+                    difficulty_groups[difficulty].append((name, scenario))
+            
+            # Display difficulty levels with counts
+            difficulty_info = {
+                "beginner": {"icon": "🌸", "title": "Beginner", "desc": "Perfect for getting started", "color": "bright_green"},
+                "intermediate": {"icon": "⚡", "title": "Intermediate", "desc": "Ready for more challenges", "color": "bright_yellow"},
+                "advanced": {"icon": "🔥", "title": "Advanced", "desc": "Master-level scenarios", "color": "bright_red"}
+            }
+            
+            for i, (difficulty, info) in enumerate(difficulty_info.items(), 1):
+                count = len(difficulty_groups[difficulty])
+                completed_count = len([name for name, _ in difficulty_groups[difficulty] 
+                                     if name in [s for s, p in tracker.scenarios.items() if p.status == "completed"]])
+                
+                self.console.print(
+                    f"[{info['color']}]{i}.[/{info['color']}] {info['icon']} [bold]{info['title']}[/bold] "
+                    f"({completed_count}/{count} completed) - {info['desc']}"
+                )
+            
+            self.console.print("\n[bright_green]4.[/bright_green] 📊 View All Scenarios")
+            self.console.print("\n[dim]Press Enter to return to main menu[/dim]")
+            
+            choice = Prompt.ask(
+                "\n[bright_yellow]Select difficulty level or option[/bright_yellow]",
+                choices=["1", "2", "3", "4", ""],
+                default=""
+            )
+            
+            if choice == "":
+                break
+            elif choice == "4":
+                self._manage_all_scenarios(scenarios)
+            else:
+                difficulty_map = {"1": "beginner", "2": "intermediate", "3": "advanced"}
+                selected_difficulty = difficulty_map[choice]
+                self._manage_scenarios_by_difficulty(difficulty_groups[selected_difficulty], selected_difficulty)
+    
+    def _manage_scenarios_by_difficulty(self, scenarios_list, difficulty):
+        """Manage scenarios filtered by difficulty level"""
+        if not scenarios_list:
+            self.console.print(Panel(
+                f"[yellow]No {difficulty} scenarios available yet[/yellow]\n\n"
+                "[dim]Check back later for new challenges![/dim]",
+                title=f"No {difficulty.title()} Scenarios",
+                border_style="yellow"
+            ))
+            input("\nPress Enter to continue...")
+            return
+        
+        while True:
+            self.console.clear()
+            difficulty_colors = {
+                "beginner": "bright_green",
+                "intermediate": "bright_yellow",
+                "advanced": "bright_red"
+            }
+            
+            self.console.print(f"\n[{difficulty_colors[difficulty]}]🎆 {difficulty.title()} Scenario Management[/{difficulty_colors[difficulty]}]\n")
+            
+            # List scenarios
+            for i, (name, scenario) in enumerate(scenarios_list, 1):
                 completed = name in [s for s, p in tracker.scenarios.items() if p.status == "completed"]
                 status = "✅ COMPLETED" if completed else "🎯 AVAILABLE"
                 self.console.print(f"[bright_green]{i}.[/bright_green] {name} - {status}")
@@ -391,11 +592,63 @@ class InteractiveDojo:
             self.console.print("[bright_green]c[/bright_green] - Check scenario")
             self.console.print("[bright_green]r[/bright_green] - Reset scenario")
             self.console.print("[bright_green]i[/bright_green] - Show connection info")
-            self.console.print("[bright_green]b[/bright_green] - Back to main menu")
+            self.console.print("\n[dim]Press Enter to go back[/dim]")
             
-            choice = Prompt.ask("\n[bright_yellow]Choose action[/bright_yellow]", choices=["s", "t", "c", "r", "i", "b"])
+            choice = Prompt.ask(
+                "\n[bright_yellow]Choose action[/bright_yellow]", 
+                choices=["s", "t", "c", "r", "i", ""],
+                default=""
+            )
             
-            if choice == "b":
+            if choice == "":
+                break
+            
+            scenario_choice = Prompt.ask(
+                "[bright_yellow]Select scenario number[/bright_yellow]",
+                choices=[str(i) for i in range(1, len(scenarios_list) + 1)]
+            )
+            
+            scenario_name, scenario_class = scenarios_list[int(scenario_choice) - 1]
+            scenario = self.manager.get_scenario(scenario_name)
+            
+            if choice == "s":
+                self.start_scenario(scenario, scenario_name)
+            elif choice == "t":
+                self.stop_scenario(scenario, scenario_name)
+            elif choice == "c":
+                self.check_scenario(scenario, scenario_name)
+            elif choice == "r":
+                self.reset_scenario(scenario, scenario_name)
+            elif choice == "i":
+                self.show_scenario_connection_info(scenario, scenario_name)
+    
+    def _manage_all_scenarios(self, scenarios):
+        """Manage all scenarios (original flat view)"""
+        while True:
+            self.console.clear()
+            self.console.print("🎆 [bold bright_cyan]All Scenarios Management[/bold bright_cyan] 🎆\n")
+            
+            # List all scenarios
+            for i, (name, scenario) in enumerate(scenarios.items(), 1):
+                completed = name in [s for s, p in tracker.scenarios.items() if p.status == "completed"]
+                status = "✅ COMPLETED" if completed else "🎯 AVAILABLE"
+                self.console.print(f"[bright_green]{i}.[/bright_green] {name} - {status}")
+            
+            self.console.print("\n[bright_yellow]Actions:[/bright_yellow]")
+            self.console.print("[bright_green]s[/bright_green] - Start scenario")
+            self.console.print("[bright_green]t[/bright_green] - Stop scenario")
+            self.console.print("[bright_green]c[/bright_green] - Check scenario")
+            self.console.print("[bright_green]r[/bright_green] - Reset scenario")
+            self.console.print("[bright_green]i[/bright_green] - Show connection info")
+            self.console.print("\n[dim]Press Enter to go back[/dim]")
+            
+            choice = Prompt.ask(
+                "\n[bright_yellow]Choose action[/bright_yellow]", 
+                choices=["s", "t", "c", "r", "i", ""],
+                default=""
+            )
+            
+            if choice == "":
                 break
             
             scenario_choice = Prompt.ask(
@@ -768,7 +1021,7 @@ def version():
     
     version_panel = Panel(
         "[bold cyan]CloudDojo CLI[/bold cyan]\n"
-        "[bold green]Version 0.3.0[/bold green]\n\n"
+        "[bold green]Version 0.2.0[/bold green]\n\n"
         "[bold]Features:[/bold]\n"
         "  • Interactive training interface\n"
         "  • Gamified scenario management\n"

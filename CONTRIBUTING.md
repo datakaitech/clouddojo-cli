@@ -66,6 +66,32 @@ git push origin feature/my-awesome-scenario
 - ✅ Export `scenario_class` variable
 - ✅ Valid difficulty: `"beginner"`, `"intermediate"`, or `"advanced"`
 
+### 🎯 Difficulty-Based Navigation
+
+CloudDojo uses a hierarchical navigation system that automatically organizes scenarios:
+
+**Level 1: Difficulty Selection**
+- 🌸 **Beginner** - Perfect for getting started
+- ⚡ **Intermediate** - Ready for more challenges  
+- 🔥 **Advanced** - Master-level scenarios
+
+**Level 2: Technology Groups** (within each difficulty)
+- 🐋 Container & Docker
+- ⚓ Kubernetes
+- 🐧 Linux & System Admin
+- 🌐 Other
+
+**How It Works:**
+1. Set the `difficulty` property in your scenario class
+2. Technology grouping happens automatically based on scenario name keywords
+3. Users navigate: Difficulty → Technology → Individual Scenarios
+
+```python
+@property
+def difficulty(self) -> str:
+    return "intermediate"  # Will appear under ⚡ Intermediate
+```
+
 ### Recommended Features
 - ✅ Create `ScenarioMetadata` class with story context
 - ✅ Provide 4 progressive hints
@@ -74,19 +100,19 @@ git push origin feature/my-awesome-scenario
 
 ## 🎯 Scenario Ideas
 
-### Beginner (Docker Basics)
+### 🌸 Beginner (Docker Basics)
 - Redis connection refused
 - PostgreSQL authentication failure
 - Apache virtual host misconfiguration
 - File permission issues
 
-### Intermediate (Kubernetes)
+### ⚡ Intermediate (Kubernetes)
 - Pod OOMKilled errors
 - ConfigMap mounting issues
 - Service discovery failures
 - Ingress routing problems
 
-### Advanced (Production SRE)
+### 🔥 Advanced (Production SRE)
 - Log rotation failures
 - Cron job syntax errors
 - Process management issues
