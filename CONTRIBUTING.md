@@ -57,6 +57,9 @@ git commit -m "Add my-awesome-scenario: Redis connection troubleshooting"
 git push origin feature/my-awesome-scenario
 # Create pull request on GitHub
 ```
+**NOTE**
+- All pull requests must be raised against the latest release branch (for example, release_v_0.x.x) and not directly to the master branch.
+- Only after successful review and testing, the changes will be merged into master, which represents the latest stable version.
 
 ## 📋 Scenario Requirements
 
