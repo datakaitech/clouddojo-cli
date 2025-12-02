@@ -29,7 +29,7 @@ def get_scenario_package_data():
 
 setup(
     name="clouddojo",
-    version="0.1.0",
+    version="0.2.0",
     description="A gamified, narrative-driven troubleshooting platform for DevOps/SRE engineers",
     long_description=long_description,
     long_description_content_type="text/markdown",
